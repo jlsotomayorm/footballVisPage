@@ -1,0 +1,530 @@
+TBD: detail view for <span>{{matchIds}}</span>
+
+
+
+<uib-tabset>
+
+
+    <uib-tab heading="Motifs View">
+        <div class = "container">
+            <fv-save-png>
+
+                    <fv-arrow-motifs height="500" time-line-height="100"
+                              matches-subset="vm.subsetA"  motifs-data
+                                             ="vm.motifsData"
+                                     match-events="vm.selectedMatchEvents"
+                                     is-unique-enabled="vm.isUniqueEnabled"
+                                     filtered-data="vm.filteredMotifs"
+                                     freq-count = "vm.frequencyCount"
+                                     fv-pitch />
+
+
+            </fv-save-png>
+
+            <fv-heat-map data="vm.filteredMotifs"></fv-heat-map>
+
+        <!--    <fv-save-png>
+
+
+
+                <fv-arrow-motifs height="400" time-line-height="80"
+                                 matches-subset="vm.subsetB" fv-pitch />
+
+
+            </fv-save-png>-->
+
+
+
+        </div>
+
+    </uib-tab>
+
+    <uib-tab heading="Matrix View">
+
+            <fv-save-png>
+                <fv-events-matrix matches-subset="vm.subsetA"
+                                  is-unique-enabled="vm.isUniqueEnabled"
+                                  match-events="vm.selectedMatchEvents"
+                                  motifs-data="vm.filteredMotifs">
+                    Test
+                </fv-events-matrix>
+            </fv-save-png>
+
+
+
+    </uib-tab>
+
+    <uib-tab heading="Goal Analysis">
+        <div class = "container">
+
+            <div class="col-md-4">
+                <div ng-repeat="match in vm.goalPrevEvents">
+                    <p class="matchName">
+                        {{vm.subsetA[$index].home_team_name}} vs
+                        {{vm.subsetA[$index].away_team_name}}
+                        ( {{vm.subsetA[$index].home_score}} -
+                        {{vm.subsetA[$index].away_score}} )
+                    </p>
+                    <!--<div ng-repeat="(teamId,events) in match">
+                        <fv-events-before-goal team-events = "events">
+                        </fv-events-before-goal>
+                    </div>-->
+                    <fv-events-before-goal
+                            prev-events ="match[vm.subsetA[$index].home_team_id]"
+                            team-name="{{vm.subsetA[$index].home_team_name}}">
+                    </fv-events-before-goal>
+
+                    <fv-events-before-goal
+                            prev-events = "match[vm.subsetA[$index].away_team_id]"
+                            team-name="{{vm.subsetA[$index].away_team_name}}">
+                    </fv-events-before-goal>
+
+                </div>
+
+            </div>
+            <div class="col-md-4">
+                <fv-team-filter selected-matches="vm.subsetA"
+                                match-events="vm.goalPrevEvents"
+                                result="vm.filteredByTeam"
+                                selected-event="vm.selectedEventId">
+
+                </fv-team-filter>
+            </div>
+
+            <div class="col-md-4">
+                <fv-space-filter
+                        filtered-events="vm.filteredByTeam"
+                        selected-event="vm.selectedEventId">
+
+                </fv-space-filter>
+
+            </div>
+
+
+
+        </div>
+
+    </uib-tab>
+
+
+    <uib-tab heading="Clusters Analysis">
+
+     <!--   <div class="container">
+            <div class="row" ng-repeat="ind in [1,2,3,4,5,6,7,8]">
+
+                <div class="col-md-4"
+                     ng-repeat="index50 in vm.subClustersObj[ind]">
+                    <fv-bundle-pass-cluster data="vm.testTrajectories[index50]">
+                    </fv-bundle-pass-cluster>
+                </div>
+            </div>
+
+           &lt;!&ndash; <div class ="row" ng-repeat="clusterVect in vm.clusters8Data">
+                <div class="col-md-4">
+                    <fv-pass-cluster data="clusterVect">
+
+                    </fv-pass-cluster>
+                </div>
+
+                <div class="col-md-2" ng-repeat="index50 in vm.subClustersObj[$index+1]">
+                    <fv-pass-cluster data="vm.clusters50Data[index50]">
+
+                    </fv-pass-cluster>
+                </div>
+            </div>&ndash;&gt;
+        </div>-->
+
+
+    </uib-tab>
+
+    <uib-tab heading="Motifs Frequency">
+
+        <div class="container">
+
+            <div class="row"
+                 ng-repeat="(teamId,perArea) in vm.frequencyCount.frequencies">
+                <div class="col-md-12">
+                    {{teamId}}
+                </div>
+
+                <div class="col-md-4">
+                    <fv-motifs-frequency  team-name=" "
+                                         data="perArea.defense"></fv-motifs-frequency>
+                </div>
+
+                <div class="col-md-4">
+                    <fv-motifs-frequency  team-name=" "
+                                         data="perArea.middle"></fv-motifs-frequency>
+                </div>
+
+                <div class="col-md-4">
+                    <fv-motifs-frequency team-name=" "
+                                         data="perArea.attack"></fv-motifs-frequency>
+                </div>
+            </div>
+
+        </div>
+    </uib-tab>
+
+    <uib-tab heading="MF Per Cluster">
+
+        <div class="container-fluid">
+
+            <div class="row">
+                <fv-players-frequency
+                        data="vm.frequencyCount.playersCount"
+                        selected-motif="vm.mouseOnMotif"></fv-players-frequency>
+            </div>
+            <div class="row" style="height:50px;">
+                Order by:
+                Cluster
+                <select id="cluster"
+                        ng-model="vm.motifPerCluster.selectedCluster">
+                    <option value="1" >1</option>
+                    <option value="2" >2</option>
+                    <option value="3" >3</option>
+                    <option value="4" >4</option>
+                    <option value="5" >5</option>
+                    <option value="7" >7</option>
+                    <option value="8" >8</option>
+                </select>
+
+                Area:
+                <select id="area" ng-model="vm.motifPerCluster.selectedArea">
+                    <option value="defense" >Defense</option>
+                    <option value="middle" >Middle</option>
+                    <option value="attack" >Attack</option>
+                </select>
+
+                Motif:
+                <select id="motif" ng-model="vm.motifPerCluster.selectedMotif">
+                    <option value="none"> None</option>
+                    <option value="0"> ABAB</option>
+                    <option value="1"> ABAC</option>
+                    <option value="2"> ABCA</option>
+                    <option value="3"> ABCB</option>
+                </select>
+
+                <button ng-click="vm.motifPerCluster.orderFrequenciesPerCluster()">
+                    Sort
+                </button>
+
+
+            </div>
+         <!--   <div class="row">
+                <div class="col-md-6">
+                    <div class="col-md-3" ng-repeat="idx in [1,2,3,4]">
+                        <fv-color-legend min-value="0"
+                                max-value="vm.frequencyCount.maxValues[idx]"
+                                scale-name="YlGnBu"></fv-color-legend>
+                        <p class="text-center"> Cluster {{idx}}</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="col-md-3" ng-repeat="idx in [5,6,7,8]">
+                        <fv-color-legend min-value="0"
+                                         max-value="vm.frequencyCount.maxValues[idx]"
+                                         scale-name="YlGnBu"></fv-color-legend>
+
+                        <p class="text-center"> Cluster {{idx}}</p>
+                    </div>
+                </div>
+
+            </div>-->
+
+            <div class="row" >
+
+                <div class="col-md-1 col-md-offset-1"
+                     ng-repeat="region in ['defense','middle','attack']">
+                    <div class="row" ng-repeat="idx in [6,3,1,2,7,4,5,8]">
+                        <fv-color-legend min-value="0"
+                                         max-value="vm.frequencyCount.maxValues[idx][region]"
+                                         scale-name="YlGnBu"></fv-color-legend>
+                        <p class="text-center"> Cluster {{idx}}</p>
+                    </div>
+                </div>
+
+              <!--  <div class="col-md-1 col-md-offset-1">
+                    <div class="row" ng-repeat="idx in [1,2,3,4,5,6,7,8]">
+                        <fv-color-legend min-value="0"
+                                         max-value="vm.frequencyCount.maxValues[idx].middle"
+                                         scale-name="YlGnBu"></fv-color-legend>
+                        <p class="text-center"> Cluster {{idx}}</p>
+                    </div>
+                </div>
+                <div class="col-md-1 col-md-offset-1">
+                    <div class="row" ng-repeat="idx in [1,2,3,4,5,6,7,8]">
+                        <fv-color-legend min-value="0"
+                                         max-value="vm.frequencyCount.maxValues[idx].attack"
+                                         scale-name="YlGnBu"></fv-color-legend>
+                        <p class="text-center"> Cluster {{idx}}</p>
+                    </div>
+                </div>-->
+
+
+
+            </div>
+
+            <div class="row" ng-repeat="region in ['defense','middle','attack']">
+                <div class="container-fluid">
+                    <div class="row" >
+                        <p> {{region}}</p>
+
+                        <div class="col-md-1"
+                             ng-repeat="teamObj in vm.frequencyCount.frequenciesPerCluster"
+                             ng-if="$index<10">
+                            <div class="row">
+                        <span style="font-weight:bolder; padding:5px;">
+                                {{vm.teamNamesMap[teamObj.team_id]}}
+                        </span>
+                            </div>
+                            <div class="row"
+                                 ng-repeat="clusterId in [6,3,1,2,7,4,5,8]">
+                                <div class="col-md-3 nopadding"
+                                     ng-repeat="areaArr in teamObj.clusters[clusterId].perStructure[region]">
+                                    <fv-motifs-freq-per-type
+                                            data="areaArr"
+                                            team-id="{{teamObj.team_id}}"
+                                            cluster-id="{{clusterId}}"
+                                            motif-id="{{$index}}"
+                                            selected-motif="vm.mouseOnMotif"
+                                            max-value="{{vm.frequencyCount.maxValues[clusterId][region]}}"
+                                            ></fv-motifs-freq-per-type>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-1"
+                             ng-repeat="teamObj in vm.frequencyCount.frequenciesPerCluster"
+                             ng-if="$index>=10">
+                            <div class="row">
+                <span style="font-weight:bolder; padding:5px;">
+                        {{vm.teamNamesMap[teamObj.team_id]}}
+                </span>
+                            </div>
+                            <!-- <div class="row"
+                                  ng-repeat="(clusterId,perArea) in teamObj.clusters">-->
+                            <div class="row" ng-repeat="clusterId in [6,3,1,2,7,4,5,8]">
+                                <div class="col-md-3 nopadding"
+                                     ng-repeat="areaArr in teamObj.clusters[clusterId].perStructure[region]">
+                                    <fv-motifs-freq-per-type
+                                            data="areaArr"
+                                            team-id="{{teamObj.team_id}}"
+                                            cluster-id="{{clusterId}}"
+                                            motif-id="{{$index}}"
+                                            selected-motif="vm.mouseOnMotif"
+                                            max-value="{{vm.frequencyCount.maxValues[clusterId][region]}}"
+                                            ></fv-motifs-freq-per-type>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+           <!-- <div class="row">
+                <p> Middle</p>
+
+                <div class="col-md-1"
+                     ng-repeat="teamObj in vm.frequencyCount.frequenciesPerCluster"
+                     ng-if="$index<10">
+                    <div class="row">
+                        <span style="font-weight:bolder; padding:5px;">
+                                {{vm.teamNamesMap[teamObj.team_id]}}
+                        </span>
+                    </div>
+                    <div class="row"
+                         ng-repeat="(clusterId,perArea) in teamObj.clusters">
+                        <div class="col-md-3 nopadding"
+                             ng-repeat="areaArr in perArea.perStructure.middle">
+                            <fv-motifs-freq-per-type
+                                    data="areaArr"
+                                    team-id="{{teamObj.team_id}}"
+                                    cluster-id="{{clusterId}}"
+                                    motif-id="{{$index}}"
+                                    selected-motif="vm.mouseOnMotif"
+                                    max-value="{{vm.frequencyCount.maxValues[clusterId].middle}}"
+                                    ></fv-motifs-freq-per-type>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-1"
+                     ng-repeat="teamObj in vm.frequencyCount.frequenciesPerCluster"
+                     ng-if="$index>=10">
+                    <div class="row">
+                <span style="font-weight:bolder; padding:5px;">
+                        {{vm.teamNamesMap[teamObj.team_id]}}
+                </span>
+                    </div>
+                    <div class="row"
+                         ng-repeat="(clusterId,perArea) in teamObj.clusters">
+                        <div class="col-md-3 nopadding"
+                             ng-repeat="areaArr in perArea.perStructure.middle">
+                            <fv-motifs-freq-per-type
+                                    data="areaArr"
+                                    team-id="{{teamObj.team_id}}"
+                                    cluster-id="{{clusterId}}"
+                                    motif-id="{{$index}}"
+                                    selected-motif="vm.mouseOnMotif"
+                                    max-value="{{vm.frequencyCount.maxValues[clusterId].middle}}"
+                                    ></fv-motifs-freq-per-type>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <p> Attack</p>
+
+                <div class="col-md-1"
+                     ng-repeat="teamObj in vm.frequencyCount.frequenciesPerCluster"
+                     ng-if="$index<10">
+                    <div class="row">
+                        <span style="font-weight:bolder; padding:5px;">
+                                {{vm.teamNamesMap[teamObj.team_id]}}
+                        </span>
+                    </div>
+                    <div class="row"
+                         ng-repeat="(clusterId,perArea) in teamObj.clusters">
+                        <div class="col-md-3 nopadding"
+                             ng-repeat="areaArr in perArea.perStructure.attack">
+                            <fv-motifs-freq-per-type
+                                    data="areaArr"
+                                    team-id="{{teamObj.team_id}}"
+                                    cluster-id="{{clusterId}}"
+                                    motif-id="{{$index}}"
+                                    selected-motif="vm.mouseOnMotif"
+                                    max-value="{{vm.frequencyCount.maxValues[clusterId].attack}}"
+                                    ></fv-motifs-freq-per-type>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-1"
+                     ng-repeat="teamObj in vm.frequencyCount.frequenciesPerCluster"
+                     ng-if="$index>=10">
+                    <div class="row">
+                <span style="font-weight:bolder; padding:5px;">
+                        {{vm.teamNamesMap[teamObj.team_id]}}
+                </span>
+                    </div>
+                    <div class="row"
+                         ng-repeat="(clusterId,perArea) in teamObj.clusters">
+                        <div class="col-md-3 nopadding"
+                             ng-repeat="areaArr in perArea.perStructure.attack">
+                            <fv-motifs-freq-per-type
+                                    data="areaArr"
+                                    team-id="{{teamObj.team_id}}"
+                                    cluster-id="{{clusterId}}"
+                                    motif-id="{{$index}}"
+                                    selected-motif="vm.mouseOnMotif"
+                                    max-value="{{vm.frequencyCount.maxValues[clusterId].attack}}"
+                                    ></fv-motifs-freq-per-type>
+                        </div>
+
+                    </div>
+                </div>
+            </div>-->
+
+
+
+           <!-- <div class="row"
+                    ng-repeat="teamObj in vm.frequencyCount.frequenciesPerCluster">
+               &lt;!&ndash; <div class="col-md-12">
+                    <span style="font-weight:bolder;">
+                        {{vm.teamNamesMap[teamObj.team_id]}}
+                    </span>
+
+                </div>&ndash;&gt;
+                <div class="col-md-6">
+                    <div class="col-md-3"
+                         ng-repeat="(clusterId,perArea) in teamObj.clusters"
+                         ng-if="clusterId<5">
+                        &lt;!&ndash;{{clusterId}}&ndash;&gt;
+                        <div class="row">
+                            <span style="font-weight:bolder; padding:5px;">
+                                {{vm.teamNamesMap[teamObj.team_id]}}
+                             </span>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-3 nopadding"
+                                 ng-repeat="areaArr in perArea.perStructure">
+                                <fv-motifs-freq-per-type
+                                        data="areaArr"
+                                        team-id="{{teamObj.team_id}}"
+                                        cluster-id="{{clusterId}}"
+                                        motif-id="{{$index}}"
+                                        selected-motif="vm.mouseOnMotif"
+                                        max-value="{{vm.frequencyCount.maxValues[clusterId]}}"
+                                        ></fv-motifs-freq-per-type>
+                            </div>
+
+                        </div>
+
+
+
+
+
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="col-md-3"
+                         ng-repeat="(clusterId,perArea) in teamObj.clusters"
+                         ng-if="clusterId>=5">
+                        &lt;!&ndash;{{clusterId}}&ndash;&gt;
+                        <div class="row">
+                            <span style="font-weight:bolder; padding:5px;">
+                                {{vm.teamNamesMap[teamObj.team_id]}}
+                             </span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3 nopadding"
+                                 ng-repeat="areaArr in perArea.perStructure">
+                                <fv-motifs-freq-per-type
+                                        data="areaArr"
+                                        team-id="{{teamObj.team_id}}"
+                                        cluster-id="{{clusterId}}"
+                                        motif-id="{{$index}}"
+                                        selected-motif="vm.mouseOnMotif"
+                                        max-value="{{vm.frequencyCount.maxValues[clusterId]}}"
+                                        ></fv-motifs-freq-per-type>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+            </div>-->
+
+        </div>
+    </uib-tab>
+
+</uib-tabset>
+

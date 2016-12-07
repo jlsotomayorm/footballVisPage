@@ -1,0 +1,126 @@
+
+<div class="row">
+
+    <div class="col-md-2" style="height: 300px">
+       <!-- <fv-color-legend-discrete scale-name="Set1"
+                                  label-names="motifsVm.topPlayers">
+        </fv-color-legend-discrete>-->
+    </div>
+    <div class="col-md-6" id="playerHistograms">
+        Test
+
+    </div>
+    <div class ="col-md-4">
+
+        <div class="panel panel-default">
+            <div class="panel-heading"> Filters </div>
+            <div class="panel-body">
+
+                    <div>
+                        Team :
+                        <select ng-model="motifsVm.selectedTeam"
+                                ng-options="team.name for team in motifsVm.teams"
+                                ng-change="motifsVm.filterTeam()">
+                        </select>
+                    </div>
+                    <div>
+
+                        <input type="checkbox" id="enableUnique"
+                               ng-model="motifsVm.isUniqueEnabled"
+                               ng-change="motifsVm.uniqueTeamsChanged()">
+                        <label for="enableUnique"> Group by team name</label>
+
+                    </div>
+                    <div>
+                        Motif :
+                        <select ng-model="motifsVm.selectedMotif"
+                                ng-options="motif.name for motif in motifsVm.motifs"
+                                ng-change="motifsVm.filterMotif()">
+                        </select>
+                    </div>
+
+                    <div>
+                        Cluster :
+                        <select ng-model="motifsVm.selectedCluster"
+                                ng-options="cluster.name for cluster in motifsVm.clusters"
+                                ng-change="motifsVm.filterCluster()">
+                        </select>
+                    </div>
+
+                <div>
+                    Spatial :
+                    <select ng-model="motifsVm.selectedArea"
+                            ng-options="area.name for area in motifsVm.areas"
+                            ng-change="motifsVm.filterArea()">
+                    </select>
+                </div>
+
+                <div>
+                    Segments :
+                    <ul id="segmentList" class="list-unstyled">
+                        <li ng-repeat="aSegment in motifsVm.segments">
+                            <input type="checkbox"
+                                   ng-model="aSegment.checked"
+                                   ng-click="motifsVm.filterSegment()">
+                            {{aSegment.name}}
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div>
+            Visualizing {{motifsVm.motifsLength}} motifs
+        </div>
+
+        <div class = "row">
+            Lines Color :
+            <select ng-model="motifsVm.lineSelectedAttribute"
+                    ng-options="attribute.name for attribute in motifsVm.lineColorAttributes">
+            </select>
+        </div>
+
+        <div class = "row">
+            Players Color :
+            <select ng-model="motifsVm.playerSelectedAttribute"
+                    ng-options="attribute.name for attribute in motifsVm.playerColorAttributes">
+            </select>
+        </div>
+        <div class = "row">
+           Selected Player: {{motifsVm.selectedPlayerName}}
+
+        </div>
+
+        <div class="row">
+            <input id="enableTransparency" type="checkbox"
+                    ng-model="motifsVm.isTransparencyEnabled"/>
+            <label for="enableTransparency">Transparency</label>
+        </div>
+        <div class = "row">
+            Time Window : <br>
+            <strong>Begin: </strong>{{motifsVm.minTimeExtent | number:1}}
+            min<br>
+            <strong>End: </strong>{{motifsVm.maxTimeExtent | number:1}} min
+        </div>
+        <div class = "row">
+            <input id="enableTimeWindow" type="checkbox"
+                          ng-model="motifsVm.isSelectionEnabled">
+            <label for="enableTimeWindow">Select Time Window </label>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-10" id="timeLine">
+    </div>
+    <div class ="col-md-2" id ="mainView" style="height: 150px;">
+        <strong> Players </strong>
+        <ul class="list-unstyled">
+            <li ng-repeat="player in motifsVm.motifPlayers track by $index">{{player | playerNames}}</li>
+
+        </ul>
+    </div>
+
+</div>

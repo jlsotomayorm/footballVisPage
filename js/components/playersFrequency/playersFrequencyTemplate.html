@@ -1,0 +1,39 @@
+<div class="players-freq-table" id="playersFreqChart">
+
+    <div class="container-fluid">
+        <div class="row">
+            Order Table by:
+            <select ng-model="playerFreqVm.selectedOrder"
+                    ng-options="op.id as op.label for op in playerFreqVm.tableOrderOptions"
+                    ng-change="playerFreqVm.reorderTable()">
+            </select>
+        </div>
+
+        <div class="row">
+            <table>
+                <tr>
+                    <th>Rank</th> <th>Player 1</th>
+                    <th>Player 2</th> <th>Player 3</th>
+                    <th>Player 4</th> <th>Frequency</th>
+                </tr>
+
+                <tr ng-repeat="motifCount in playerFreqVm.data[playerFreqVm.selectedMotif.teamId][playerFreqVm.selectedMotif.cluster][playerFreqVm.selectedMotif.area][playerFreqVm.selectedMotif.motifId]">
+                    <td> {{$index+1}}</td>
+                    <td class="playerCell"
+                        ng-style="playerFreqVm.setBgColor(motifCount.p1)">
+                        {{motifCount.p1 |
+                        playerNames}}</td>
+                    <td class="playerCell"
+                        ng-style="playerFreqVm.setBgColor(motifCount.p2)"> {{motifCount.p2 | playerNames}}</td>
+                    <td class="playerCell"
+                        ng-style="playerFreqVm.setBgColor(motifCount.p3)"> {{motifCount.p3 | playerNames}}</td>
+                    <td class="playerCell"
+                        ng-style="playerFreqVm.setBgColor(motifCount.p4)"> {{motifCount.p4 | playerNames}}</td>
+                    <td> {{motifCount.count}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+</div>

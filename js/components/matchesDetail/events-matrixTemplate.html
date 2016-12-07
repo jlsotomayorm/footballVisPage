@@ -1,0 +1,77 @@
+Event Matrix
+<div class = "container">
+
+    <div class="row">
+        <div class ="col-md-10 col-lg-10 col-xl-10" id ="mainView">
+
+
+        </div>
+        <div class ="col-md-2 col-lg-2 col-xl-2">
+            <div class = "row">
+                Visualizing {{vm.eventsLength}} events
+            </div>
+            <div class = "row" id = "legend">
+            </div>
+            <div class="row">
+                Team :
+                <select ng-model="vm.selectedTeam"
+                        ng-options="team.name for team in vm.teams"
+                        ng-change="vm.filterTeam(vm.selectedTeam.id)">
+                </select>
+
+            </div>
+            <div class="row">
+                <input type="checkbox" id="enableUniqueM"
+                       ng-model="vm.isUniqueEnabled">
+                <label for="enableUniqueM"> Group by team name</label>
+            </div>
+            <div class="row">
+                <input type="checkbox" id="enableGroupByMatch"
+                       ng-model="vm.isGroupByMatchEnabled"
+                       ng-change="vm.groupByMatchChanged()">
+                <label for="enableGroupByMatch"> Group by match</label>
+            </div>
+            <div class="row">
+                Events :
+                <ul class="list-unstyled">
+                    <li ng-repeat="event in vm.topEvents">
+                        <input type="checkbox"  ng-model="event.checked" ng-click="vm.filterEvent()">
+                        {{event.name}}
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row">
+                <fv-pitch height="120" fv-pitch-selection />
+            </div>
+
+            <div class="row">
+                Period {{vm.displayTime.period}} --- {{vm.displayTime.min}} :
+                {{vm.displayTime.sec}}
+            </div>
+
+            <div class="row">
+                Columns:
+                <select ng-model="vm.columnAttribute"
+                        ng-change="vm.columnAttributeChanged()">
+                    <option value="seconds"> Seconds </option>
+                    <option value="spatial"> Spatial </option>
+                </select>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row" >
+        <div class="col-md-6" id="eventHistograms"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" id="motifVsPossessionChart"></div>
+    </div>
+</div>
+
+

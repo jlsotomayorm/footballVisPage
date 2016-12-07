@@ -1,0 +1,21 @@
+<p>Team Filter </p>
+<select ng-model="teamFilterVm.selectedTeam"
+        ng-options = "team.name for team in teamFilterVm.teams"
+        ng-change="teamFilterVm.filterTeam()">
+</select>
+
+<p>Order By: </p>
+<select ng-model="teamFilterVm.selectedOrder"
+        ng-options=" order.name for order in teamFilterVm.orderOptions"
+        ng-change="teamFilterVm.updateOrder(teamFilterVm.filteredByTeam)"></select>
+
+<div>
+    <fv-events-before-goal
+            fv-event-selection
+            prev-events ="teamFilterVm.filteredByTeam"
+            team-name="{{teamFilterVm.selectedTeam.name}}"
+            yoffset="0">
+    </fv-events-before-goal>
+
+</div>
+

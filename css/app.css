@@ -1,0 +1,84 @@
+.brush .extent {
+    stroke: gray;
+    fill: dodgerblue;
+    fill-opacity: .365;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+.axis text {
+    font: 8px sans-serif;
+}
+
+
+
+/* bootstrap hack: fix content width inside hidden tabs */
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+    display: block;     /* undo display:none          */
+    height: 0;          /* height:0 is also invisible */
+    overflow-y: hidden; /* no-overflow                */
+}
+.tab-content > .active,
+.pill-content > .active {
+    height: auto;       /* let the content decide it  */
+} /* bootstrap hack end */
+
+.lines{
+    stroke: #999;
+    /*stroke: white;*/
+    stroke-width: 4px;
+}
+
+
+.rowLine {
+    stroke: #FFFFFF;
+}
+
+
+
+.matchName {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+.passHighlight {
+    stroke: white;
+    opacity: 1;
+    stroke-width: 10px;
+}
+
+.panel-body{
+    word-break: break-all;
+}
+
+
+.nopadding {
+    padding: 5px !important;
+    margin: 0 !important;
+}
+
+.players-freq-table {
+    height: 200px;
+    overflow-y: auto;
+    resize: both;
+}
+
+.playerCell {
+    color: #000000;
+    font-weight: bolder;
+}
+
+
+#segmentList ul{
+    list-style:none;
+}
+
+#segmentList li{
+    display: inline;
+}
+

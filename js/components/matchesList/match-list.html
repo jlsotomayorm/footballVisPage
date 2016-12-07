@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+      <!--Sidebar content-->
+
+      Search: <input ng-model="query">
+
+
+    </div>
+    <div class="col-md-10">
+      <!--Body content-->
+    <p>Total number of matches: {{vm.matches.length}}</p>
+    <p>Selected matches {{ (vm.matches | filter:{selected:true}).length }}</p>
+
+        <button ng-click="vm.showDetails()">Details</button>
+        <button ng-click="vm.selectSecondRoundMatches()"> Select Second
+        Round </button>
+        <button ng-click="vm.selectAllMatches()"> Select All</button>
+        <select ng-options="obj.id as obj.label for obj in vm.fieldSides"
+                ng-model="vm.homeAway">
+        </select>
+
+        <select
+                ng-options="obj.id as obj.label for obj in vm.matchesResult"
+                ng-model="vm.winOrLose">
+
+        </select>
+
+    <table>
+	<tr><th>Home</th> <th> Score </th>  <th> Score </th>
+      <th> Away </th>  <th> Link </th></tr>
+
+	<tr
+            ng-repeat="match in vm.filteredMatches=( vm.matches | homeAwayNames:query | homeAwayFilter:query:vm.homeAway | winLoseFilter:query:vm.winOrLose)">
+	    <td>{{match.home_team_name}}</td> <td>{{match.home_score}}</td><td>{{match.away_score}}</td>
+        <td>{{match.away_team_name}}</td>
+        <td><a ng-href="ftp://combaftp/opta/{{match.filename}}"> {{match.filename}} </a></td>
+        <td><a ng-href="{{match.globo_url}}"> {{match.game_date}}</a></td>
+        <td>{{match.id}}</td>
+        <td><a href ="#/matches/{{match.id}}"
+               ng-click="vm.setSelectedMatches([match])">
+          Details
+        </a></td>
+        <td> <input type="checkbox" ng-model="match.selected"></td>
+	</tr>
+    </table>
+
+    </div>
+  </div>
+</div>
