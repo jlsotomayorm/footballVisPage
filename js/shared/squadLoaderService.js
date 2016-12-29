@@ -19,7 +19,7 @@ angular.module("footballVisApp")
         function getSquadData () {
 
             if (squadData.length==0) {
-                $http.get("matches/squad.js").success(function(data){
+                $http.get("matches/turkish1617Squad.js").success(function(data){
 
                     var byId ={};
                     data.forEach(function(entry) {

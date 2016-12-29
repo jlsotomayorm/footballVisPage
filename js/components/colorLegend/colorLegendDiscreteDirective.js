@@ -80,7 +80,8 @@
 
         vm.colorScaleOptions= {
             YlGnBu: ['#ffffd9','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#253494','#081d58'],
-            Set1: ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6'].reverse()
+            Set1: ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6'].reverse(),
+            Top3: ['#4daf4a','#377eb8','#e41a1c'].reverse()
         };
 
         vm.colorScale = vm.colorScaleOptions[vm.scaleName];

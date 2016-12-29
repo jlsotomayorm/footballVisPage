@@ -150,13 +150,13 @@ angular.module('footballDirectives')
             var segmentsColor = ["#e41a1c","#377eb8","#4daf4a"];
 
 
-            var corinthiansPlayers = ["Fagner","Vágner Love","Guilherme Arana","Malcom","Ralf","Elías","Edilson","Jadson","Renato Augusto"];
-            var mineiroPlayers = ["Jemerson","Douglas Santos","Giovanni Augusto","Marcos Rocha","Patric","Jesús Dátolo","Leandro Donizete","Rafael Carioca", "Luan"];
-            var gremioPlayers = ["Geromel","Frickson Erazo","Edinho","Luan","Douglas","Marcelo Oliveira","Rafael Galhardo","Walace","Giuliano"];
-            vm.topPlayers = gremioPlayers;
+            var corinthiansPlayers = ["Edilson","Jadson","Renato Augusto"];
+            var mineiroPlayers = ["Leandro Donizete","Rafael Carioca", "Luan"];
+            var gremioPlayers = ["Rafael Galhardo","Walace","Giuliano"];
+            vm.topPlayers = corinthiansPlayers;
             var playerScale = d3.scale.ordinal()
                 .domain(vm.topPlayers)
-                .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6']);
+                .range(['#4daf4a','#377eb8','#e41a1c']);
 
 
 
@@ -722,7 +722,7 @@ angular.module('footballDirectives')
                 x.addOrderRule("count",true);
                 var y = myChart.addMeasureAxis("y", "count");
                 y.title= "Frequency";
-           //     y.overrideMax = 45;
+               // y.overrideMax = 45;
                 y.showGridlines = false;
                 var s = myChart.addSeries(null, dimple.plot.bar);
 
@@ -731,9 +731,10 @@ angular.module('footballDirectives')
                 s.addEventHandler("click",function(e) {
                     $timeout(function() {
                         vm.selectedPlayerName = e.xValue;
+                        myChart.svg.selectAll(".dimple-bar").style("stroke-width","1px");
                         myChart.svg.selectAll(".dimple-bar").filter(function(d) {
                             return d.x==vm.selectedPlayerName;
-                        }).style("fill","red");
+                        }).style("stroke-width","5px");
                         updatePlayerColors();
                     });
                 });
@@ -853,9 +854,17 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader) {
                 return i +1;
             })
 
-            var clusterNames = vm.clusterIds.map(function(d){ return {id:d,name:d};});
+            //var clusterNames = vm.clusterIds.map(function(d){ return {id:d,name:d};});
+            var clusterNames = [ {id:6,name:1},
+                                {id:3,name:2},
+                                {id:1,name:3},
+                                {id:2,name:4},
+                                {id:7,name:5},
+                                {id:4,name:6},
+                                {id:5,name:7},
+                                {id:8,name:8}];
             vm.clusters = vm.clusters.concat(clusterNames);
-            vm.selectedCluster = vm.clusters[3];
+            //vm.selectedCluster = vm.clusters[3];
 
             var startingIndex = vm.motifs.length;
             vm.motifNames.forEach(function(ele,i) {

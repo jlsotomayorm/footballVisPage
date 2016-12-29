@@ -30,7 +30,7 @@
          vm.winOrLose = vm.matchesResult[0].id;
 
          //matchInfo.js
-        $http.get("matches/turkishMatchInfo.js").success(function(data){
+        $http.get("matches/turkish1617MatchInfo.js").success(function(data){
              vm.matches = data.map(function(obj) { obj.selected = false; return obj;});
         });
 

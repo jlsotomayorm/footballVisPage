@@ -22,7 +22,7 @@ angular.module("footballVisApp")
 
             if (matchesMotifs.length ==0) {
 
-                $http.get("matches/turkishMotifs.js").success(function(data){
+                $http.get("matches/turkish1617Motifs.js").success(function(data){
                     matchesMotifs = data;
                     deferred.resolve(data);
 
