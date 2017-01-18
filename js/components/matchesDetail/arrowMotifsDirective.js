@@ -5,7 +5,7 @@
  * Created by jl on 25/08/15.
  */
 angular.module('footballDirectives')
-    .directive('fvArrowMotifs', ["$timeout","timeUtils", "$filter", function($timeout,timeUtils,$filter) {
+    .directive('fvArrowMotifs', ["$timeout","timeUtils", function($timeout,timeUtils) {
 
         var directive = {
             restrict: 'E',
@@ -48,11 +48,13 @@ angular.module('footballDirectives')
             //Colors
             var motifColors = d3.scale.ordinal();
             // red , blue, yellow, purple, orange
-            motifColors.range(["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00"]);
+            //motifColors.range(["#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00"]);
+            motifColors.range(['#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e']);
 
             var clusterColors = d3.scale.ordinal();
             clusterColors.domain([1,2,3,4,5,6,7,8]);
-            clusterColors.range(['#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0','#f0027f','#bf5b17','#666666']);
+            //clusterColors.range(['#7fc97f','#beaed4','#fdc086','#ffff99','#386cb0','#f0027f','#bf5b17','#666666']);
+            clusterColors.range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00']);
 
 
 
@@ -159,7 +161,12 @@ angular.module('footballDirectives')
                 .range(['#4daf4a','#377eb8','#e41a1c']);
 
 
-
+            var symbolMap ={
+                "A": "circle",
+                "B": "cross",
+                "C": "square",
+                "D": "triangle-up"
+            };
 
 
 
@@ -218,7 +225,21 @@ angular.module('footballDirectives')
 
             });
 
+            scope.$watch("motifsVm.selectedPlayerName", function(newName) {
+                vm.filterPlayer(vm.selectedPlayerName);
+
+            });
+
             scope.$watch("motifsVm.playerSelectedAttribute", function(newAttribute) {
+
+
+                    if(newAttribute.id=="motifPos") {
+                        vm.selectedPlayerName = "none";
+                        d3.selectAll(".dimple-bar").style("stroke-width","1px");
+
+
+                    }
+
                     updatePlayerColors();
 
             });
@@ -350,11 +371,9 @@ angular.module('footballDirectives')
 
                         //Flat array
                         var playerData = [].concat.apply([],motifsPlayers);
-                        var playerDataWithName = playerData.map(function(motif) {
-                            return angular.extend(motif,{player_name: $filter("playerNames")(motif.player_id)})
-                        });
 
-                        playerChart.data = playerDataWithName;
+
+                        playerChart.data = playerData;
                         playerChart.draw();
 
                         playerChart.svg.selectAll(".dimple-bar").style("fill",function(d){
@@ -457,12 +476,7 @@ angular.module('footballDirectives')
                 var lpoints = d3.select(element).selectAll(".lpoint")
                     .data(motifObj.motifs);
 
-                var symbolMap ={
-                    "A": "circle",
-                    "B": "cross",
-                    "C": "square",
-                    "D": "triangle-up"
-                };
+
                 var symbol = d3.svg.symbol()
                     .type(function(d,i) {
                         return symbolMap[d.structure[d.pass_id]];
@@ -491,6 +505,7 @@ angular.module('footballDirectives')
             }
 
             function updatePlayerColors() {
+
                 var playerPositions = passesGroup.selectAll(".lpoint");
 
                 playerPositions
@@ -552,7 +567,7 @@ angular.module('footballDirectives')
                 var width = xMax-xMin;
                 var height = yMax-yMin;
 
-                return (width>height)? "red" : "white";
+                return (width>height)? "red" : "black";
 
             }
 
@@ -562,10 +577,12 @@ angular.module('footballDirectives')
             function colorPlayers(aMotif) {
                 var coloring =  {
                     "motifPos": function(d) {
+
                         return d.pass_id==0?"white":segmentsColor[d.pass_id-1];
                     },
                     "player": function(d) {
-                        return d.player_name==vm.selectedPlayerName? "red" : null;
+
+                        return d.player_name==vm.selectedPlayerName? ( d.pass_id==0?"white":segmentsColor[d.pass_id-1] ): null;
                     }
                 };
 
@@ -730,10 +747,12 @@ angular.module('footballDirectives')
 
                 s.addEventHandler("click",function(e) {
                     $timeout(function() {
-                        vm.selectedPlayerName = e.xValue;
+                        if(vm.playerSelectedAttribute.id=="player") {
+                            vm.selectedPlayerName = e.xValue;
+                        }
                         myChart.svg.selectAll(".dimple-bar").style("stroke-width","1px");
                         myChart.svg.selectAll(".dimple-bar").filter(function(d) {
-                            return d.x==vm.selectedPlayerName;
+                            return d.x== e.xValue;
                         }).style("stroke-width","5px");
                         updatePlayerColors();
                     });
@@ -758,9 +777,9 @@ angular.module('footballDirectives')
 
     }]);
 
-arrowMotifsController.$inject = ["$scope","motifsLoaderService","eventsLoaderService"];
+arrowMotifsController.$inject = ["$scope","motifsLoaderService","eventsLoaderService","$filter"];
 
-function arrowMotifsController($scope,motifsLoader,eventsLoader) {
+function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
     var vm = this;
 
 
@@ -790,6 +809,7 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader) {
     vm.filterCluster = filterCluster;
     vm.filterArea = filterArea;
     vm.filterSegment = filterSegment;
+    vm.filterPlayer = filterPlayer;
     vm.uniqueTeamsChanged = uniqueTeamsChanged;
     vm.filterHelper = filterTeamMatchHelper;
     vm.lineColorAttributes = [
@@ -813,7 +833,7 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader) {
     vm.goalEventId = 16;
     vm.ownGoalProperty = "X28";
 
-    vm.selectedPlayerName = "Anderson";
+    vm.selectedPlayerName = "none";
 
 
 
@@ -1068,11 +1088,14 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader) {
     });
 
 
+
     function addMatchIdToPassObjects(data) {
 
         data.forEach(function(motifObj) {
             motifObj.motifs.forEach(function(aPassObj) {
                 aPassObj.match_id = motifObj.match_id;
+                //Additional player name added ------- todo: refactor
+                aPassObj.player_name = $filter("playerNames")(aPassObj.player_id);
             });
         });
 
@@ -1254,7 +1277,7 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader) {
             vm.dataByTeam = angular.copy(vm.data);
             vm.dataByMotif = angular.copy(vm.data);*/
 
-//            vm.filteredData = vm.data;
+            //vm.filteredData = vm.data;
             vm.filteredData = vm.data.filter(function(dataObj) {
                 return dataObj.cluster==3;
             });
@@ -1262,6 +1285,7 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader) {
             vm.dataByMotif = vm.data;
             vm.dataByCluster = vm.data;
             vm.dataByArea = vm.data;
+            vm.dataBySegment = vm.data;
         }
     });
 
@@ -1384,7 +1408,7 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader) {
             if(segment.checked)
                 arr.push(idx);
             return arr;
-        },[])
+        },[]);
 
 
         vm.filteredData = vm.dataByArea.map(function(dataObj) {
@@ -1401,7 +1425,24 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader) {
         });
 
 
-        console.log(vm.filteredData);
+        vm.dataBySegment = vm.filteredData;
+        vm.filterPlayer();
+        //console.log(vm.filteredData);
+
+    }
+
+
+    function filterPlayer() {
+
+        if(vm.selectedPlayerName!="none") {
+            vm.filteredData = vm.dataBySegment.filter(function(dataObj) {
+                var firstMatchingPass = _.find(dataObj.motifs,{player_name:vm.selectedPlayerName});
+                if (typeof firstMatchingPass != "undefined") return true;
+                return false;
+            });
+        } else {
+            vm.filteredData = vm.dataBySegment;
+        }
 
     }
 
