@@ -121,6 +121,17 @@
             <li ng-repeat="player in motifsVm.motifPlayers track by $index">{{player | playerNames}}</li>
 
         </ul>
+        <strong> Motif Info</strong>
+        <p>Match id: {{motifsVm.mouseOverMotifInfo.match.id}}</p>
+        <p>Home: {{motifsVm.mouseOverMotifInfo.match.homeName}}</p>
+        <p>Away: {{motifsVm.mouseOverMotifInfo.match.awayName}}</p>
+        <strong> Timestamp</strong>
+        <ul class="list-unstyled">
+            <li
+                    ng-repeat="aPass in motifsVm.mouseOverMotifInfo.passes track by $index">  {{aPass.min}} m : {{aPass.sec}} s
+            </li>
+
+        </ul>
     </div>
 
 </div>

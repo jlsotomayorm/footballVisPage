@@ -681,6 +681,15 @@ angular.module('footballDirectives')
                     vm.motifPlayers = motifsArray.map(function (d) {
                         return d.player_id
                     });
+
+                    var matchObj = _.find(vm.matchesSubset,{id: data.match_id});
+                    vm.mouseOverMotifInfo.match.id = data.match_id;
+                    vm.mouseOverMotifInfo.match.homeName = matchObj.home_team_name;
+                    vm.mouseOverMotifInfo.match.awayName = matchObj.away_team_name;
+
+                    vm.mouseOverMotifInfo.passes = motifsArray.slice(0,-1).map(function(d) {
+                        return {min: d.min,sec: d.sec}
+                    })
                 });
 
             }
@@ -689,6 +698,10 @@ angular.module('footballDirectives')
 
                 $timeout(function() {
                     vm.motifPlayers =[];
+                    vm.mouseOverMotifInfo.match.id = 0;
+                    vm.mouseOverMotifInfo.match.homeName = "";
+                    vm.mouseOverMotifInfo.match.awayName = "";
+                    vm.mouseOverMotifInfo.passes =[];
                 });
             }
 
@@ -828,6 +841,11 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
     vm.playerSelectedAttribute = vm.playerColorAttributes[0];
     vm.goalData = [];
     vm.filteredGoals = [];
+    vm.mouseOverMotifInfo = {
+        match: {id:  0, homeName:"", awayName:""},
+        passes: [{min: 0, sec:0}, {min: 0, sec:0}, {min: 0, sec:0}]
+
+    };
 
 
     vm.goalEventId = 16;
