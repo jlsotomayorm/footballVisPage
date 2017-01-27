@@ -74,8 +74,8 @@ angular
 
         function activate() {
            return  getMotifsData();
-                   /* .then(getEvents)
-                    .then(filterMatchEvents);*/
+                   /*.then(getEvents)
+                   .then(filterMatchEvents);*/
 
         }
 

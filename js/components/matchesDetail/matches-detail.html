@@ -54,117 +54,118 @@ TBD: detail view for <span>{{matchIds}}</span>
 
     </uib-tab>-->
 
-    <!--<uib-tab heading="Goal Analysis">
-        <div class = "container">
+    <!--
+  <uib-tab heading="Goal Analysis">
+       <div class = "container">
 
-            <div class="col-md-4">
-                <div ng-repeat="match in vm.goalPrevEvents">
-                    <p class="matchName">
-                        {{vm.subsetA[$index].home_team_name}} vs
-                        {{vm.subsetA[$index].away_team_name}}
-                        ( {{vm.subsetA[$index].home_score}} -
-                        {{vm.subsetA[$index].away_score}} )
-                    </p>
-                    &lt;!&ndash;<div ng-repeat="(teamId,events) in match">
-                        <fv-events-before-goal team-events = "events">
-                        </fv-events-before-goal>
-                    </div>&ndash;&gt;
-                    <fv-events-before-goal
-                            prev-events ="match[vm.subsetA[$index].home_team_id]"
-                            team-name="{{vm.subsetA[$index].home_team_name}}">
-                    </fv-events-before-goal>
+           <div class="col-md-4">
+               <div ng-repeat="match in vm.goalPrevEvents">
+                   <p class="matchName">
+                       {{vm.subsetA[$index].home_team_name}} vs
+                       {{vm.subsetA[$index].away_team_name}}
+                       ( {{vm.subsetA[$index].home_score}} -
+                       {{vm.subsetA[$index].away_score}} )
+                   </p>
+                   &lt;!&ndash;<div ng-repeat="(teamId,events) in match">
+                       <fv-events-before-goal team-events = "events">
+                       </fv-events-before-goal>
+                   </div>&ndash;&gt;
+                   <fv-events-before-goal
+                           prev-events ="match[vm.subsetA[$index].home_team_id]"
+                           team-name="{{vm.subsetA[$index].home_team_name}}">
+                   </fv-events-before-goal>
 
-                    <fv-events-before-goal
-                            prev-events = "match[vm.subsetA[$index].away_team_id]"
-                            team-name="{{vm.subsetA[$index].away_team_name}}">
-                    </fv-events-before-goal>
+                   <fv-events-before-goal
+                           prev-events = "match[vm.subsetA[$index].away_team_id]"
+                           team-name="{{vm.subsetA[$index].away_team_name}}">
+                   </fv-events-before-goal>
 
-                </div>
+               </div>
 
-            </div>
-            <div class="col-md-4">
-                <fv-team-filter selected-matches="vm.subsetA"
-                                match-events="vm.goalPrevEvents"
-                                result="vm.filteredByTeam"
-                                selected-event="vm.selectedEventId">
+           </div>
+           <div class="col-md-4">
+               <fv-team-filter selected-matches="vm.subsetA"
+                               match-events="vm.goalPrevEvents"
+                               result="vm.filteredByTeam"
+                               selected-event="vm.selectedEventId">
 
-                </fv-team-filter>
-            </div>
+               </fv-team-filter>
+           </div>
 
-            <div class="col-md-4">
-                <fv-space-filter
-                        filtered-events="vm.filteredByTeam"
-                        selected-event="vm.selectedEventId">
+           <div class="col-md-4">
+               <fv-space-filter
+                       filtered-events="vm.filteredByTeam"
+                       selected-event="vm.selectedEventId">
 
-                </fv-space-filter>
+               </fv-space-filter>
 
-            </div>
-
-
-
-        </div>
-
-    </uib-tab>
+           </div>
 
 
-    <uib-tab heading="Clusters Analysis">
 
-     &lt;!&ndash;   <div class="container">
-            <div class="row" ng-repeat="ind in [1,2,3,4,5,6,7,8]">
+       </div>
 
-                <div class="col-md-4"
-                     ng-repeat="index50 in vm.subClustersObj[ind]">
-                    <fv-bundle-pass-cluster data="vm.testTrajectories[index50]">
-                    </fv-bundle-pass-cluster>
-                </div>
-            </div>
-
-           &lt;!&ndash; <div class ="row" ng-repeat="clusterVect in vm.clusters8Data">
-                <div class="col-md-4">
-                    <fv-pass-cluster data="clusterVect">
-
-                    </fv-pass-cluster>
-                </div>
-
-                <div class="col-md-2" ng-repeat="index50 in vm.subClustersObj[$index+1]">
-                    <fv-pass-cluster data="vm.clusters50Data[index50]">
-
-                    </fv-pass-cluster>
-                </div>
-            </div>&ndash;&gt;
-        </div>&ndash;&gt;
+   </uib-tab>
 
 
-    </uib-tab>
+      <uib-tab heading="Clusters Analysis">
 
-    <uib-tab heading="Motifs Frequency">
+       &lt;!&ndash;   <div class="container">
+              <div class="row" ng-repeat="ind in [1,2,3,4,5,6,7,8]">
 
-        <div class="container">
+                  <div class="col-md-4"
+                       ng-repeat="index50 in vm.subClustersObj[ind]">
+                      <fv-bundle-pass-cluster data="vm.testTrajectories[index50]">
+                      </fv-bundle-pass-cluster>
+                  </div>
+              </div>
 
-            <div class="row"
-                 ng-repeat="(teamId,perArea) in vm.frequencyCount.frequencies">
-                <div class="col-md-12">
-                    {{teamId}}
-                </div>
+             &lt;!&ndash; <div class ="row" ng-repeat="clusterVect in vm.clusters8Data">
+                  <div class="col-md-4">
+                      <fv-pass-cluster data="clusterVect">
 
-                <div class="col-md-4">
-                    <fv-motifs-frequency  team-name=" "
-                                         data="perArea.defense"></fv-motifs-frequency>
-                </div>
+                      </fv-pass-cluster>
+                  </div>
 
-                <div class="col-md-4">
-                    <fv-motifs-frequency  team-name=" "
-                                         data="perArea.middle"></fv-motifs-frequency>
-                </div>
+                  <div class="col-md-2" ng-repeat="index50 in vm.subClustersObj[$index+1]">
+                      <fv-pass-cluster data="vm.clusters50Data[index50]">
 
-                <div class="col-md-4">
-                    <fv-motifs-frequency team-name=" "
-                                         data="perArea.attack"></fv-motifs-frequency>
-                </div>
-            </div>
+                      </fv-pass-cluster>
+                  </div>
+              </div>&ndash;&gt;
+          </div>&ndash;&gt;
 
-        </div>
-    </uib-tab>-->
+
+      </uib-tab>
+
+      <uib-tab heading="Motifs Frequency">
+
+          <div class="container">
+
+              <div class="row"
+                   ng-repeat="(teamId,perArea) in vm.frequencyCount.frequencies">
+                  <div class="col-md-12">
+                      {{teamId}}
+                  </div>
+
+                  <div class="col-md-4">
+                      <fv-motifs-frequency  team-name=" "
+                                           data="perArea.defense"></fv-motifs-frequency>
+                  </div>
+
+                  <div class="col-md-4">
+                      <fv-motifs-frequency  team-name=" "
+                                           data="perArea.middle"></fv-motifs-frequency>
+                  </div>
+
+                  <div class="col-md-4">
+                      <fv-motifs-frequency team-name=" "
+                                           data="perArea.attack"></fv-motifs-frequency>
+                  </div>
+              </div>
+
+          </div>
+      </uib-tab>-->
 
     <uib-tab heading="MF Per Cluster">
 

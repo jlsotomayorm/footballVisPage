@@ -67,6 +67,20 @@
                     </ul>
                 </div>
 
+                <div>
+                    Origin - Destination:
+                    <select ng-model="motifsVm.selectedOD.origin"
+                            ng-options="area.name for area in motifsVm.areas"
+                            ng-change="motifsVm.filterOrigin()">
+
+                    </select> -
+                    <select ng-model = "motifsVm.selectedOD.dest"
+                            ng-options="area.name for area in motifsVm.areas"
+                            ng-change="motifsVm.filterDestination()">
+
+                    </select>
+                </div>
+
 
             </div>
         </div>
@@ -88,8 +102,34 @@
                     ng-options="attribute.name for attribute in motifsVm.playerColorAttributes">
             </select>
         </div>
+        <div class="row">
+
+
+            <label >
+                <input type="radio" value="include"
+                       ng-model= "motifsVm.selectedPlayerOp"
+                       ng-change="motifsVm.changeSelectedPlayerOp()"
+                       name="playerSelection"/>
+                Include
+            </label>
+
+            <label>
+                <input type="radio" value="exclude"
+                       ng-model="motifsVm.selectedPlayerOp"
+                       ng-change="motifsVm.changeSelectedPlayerOp()"
+                       name="playerSelection"/>
+                Exclude
+            </label>
+
+        </div>
         <div class = "row">
-           Selected Player: {{motifsVm.selectedPlayerName}}
+           Selected Players:
+            <ul>
+                <li ng-repeat="player in motifsVm.selectedPlayerNames">
+                    {{player}}
+                </li>
+            </ul>
+
 
         </div>
 
@@ -111,6 +151,67 @@
         </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-md-3">
+        <table class="statsTable">
+            <th ng-repeat="(key,value) in motifsVm.motifStats.structure">
+                {{key}}(%)
+            </th>
+            <tr>
+                <td ng-repeat="(key,value) in motifsVm.motifStats.structure">
+                    {{value}}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-md-3 col-md-offset-2">
+        <table class="statsTable">
+            <th ng-repeat="(key,value) in motifsVm.motifStats.cluster">
+                C{{key}}(%)
+            </th>
+            <tr>
+                <td ng-repeat="(key,value) in motifsVm.motifStats.cluster">
+                    {{value}}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <table class="statsTable">
+            <th ng-repeat="(key,value) in motifsVm.motifStats.area">
+                {{key}}(%)
+            </th>
+            <tr>
+                <td ng-repeat="(key,value) in motifsVm.motifStats.area">
+                    {{value}}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-md-3 col-md-offset-1">
+        <table class="statsTable">
+            <th ng-repeat="(key,value) in motifsVm.motifStats.OD">
+                {{key}}(%)
+            </th>
+            <tr>
+                <td ng-repeat="(key,value) in motifsVm.motifStats.OD">
+                    {{value}}
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+
+
 
 <div class="row">
     <div class="col-md-10" id="timeLine">

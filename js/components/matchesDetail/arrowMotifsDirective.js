@@ -225,8 +225,8 @@ angular.module('footballDirectives')
 
             });
 
-            scope.$watch("motifsVm.selectedPlayerName", function(newName) {
-                vm.filterPlayer(vm.selectedPlayerName);
+            scope.$watchCollection("motifsVm.selectedPlayerNames", function(newName) {
+                vm.filterPlayer();
 
             });
 
@@ -234,10 +234,8 @@ angular.module('footballDirectives')
 
 
                     if(newAttribute.id=="motifPos") {
-                        vm.selectedPlayerName = "none";
+                        vm.selectedPlayerNames = [];
                         d3.selectAll(".dimple-bar").style("stroke-width","1px");
-
-
                     }
 
                     updatePlayerColors();
@@ -276,6 +274,9 @@ angular.module('footballDirectives')
             scope.$watch("motifsVm.filteredData",function(newMotifs) {
 
                 if(newMotifs) {
+
+
+                    updateStatsCount(newMotifs);
 
                     motifColors.domain(vm.motifNames);
 
@@ -582,7 +583,7 @@ angular.module('footballDirectives')
                     },
                     "player": function(d) {
 
-                        return d.player_name==vm.selectedPlayerName? ( d.pass_id==0?"white":segmentsColor[d.pass_id-1] ): null;
+                        return _.includes(vm.selectedPlayerNames,d.player_name)? ( d.pass_id==0?"white":segmentsColor[d.pass_id-1] ): null;
                     }
                 };
 
@@ -596,7 +597,7 @@ angular.module('footballDirectives')
                         return "black";
                     },
                     "player": function(d) {
-                        return d.player_name==vm.selectedPlayerName?"black": null;
+                        return _.includes(vm.selectedPlayerNames,d.player_name)?"black": null;
                     }
                 };
 
@@ -761,9 +762,8 @@ angular.module('footballDirectives')
                 s.addEventHandler("click",function(e) {
                     $timeout(function() {
                         if(vm.playerSelectedAttribute.id=="player") {
-                            vm.selectedPlayerName = e.xValue;
+                            vm.selectedPlayerNames.push(e.xValue);
                         }
-                        myChart.svg.selectAll(".dimple-bar").style("stroke-width","1px");
                         myChart.svg.selectAll(".dimple-bar").filter(function(d) {
                             return d.x== e.xValue;
                         }).style("stroke-width","5px");
@@ -784,7 +784,144 @@ angular.module('footballDirectives')
             }
 
 
+            function updateStatsCount( filteredMotifs) {
+
+
+                var clustersCount = getClustersCount(filteredMotifs);
+                var motifsCount = getMotifsCount(filteredMotifs);
+                var areaCount = getAreaCount(filteredMotifs);
+                var ODCount = getODCount(filteredMotifs);
+
+                var clustersNewNaming = _.mapKeys(clustersCount,function(value,clusterKey) {
+                    var matched = _.find(vm.clusterNames,{id:Number(clusterKey)});
+                    return matched.name;
+                });
+                vm.motifStats.cluster = clustersNewNaming;
+                vm.motifStats.structure = motifsCount;
+                vm.motifStats.area = areaCount;
+                vm.motifStats.OD = ODCount;
+
+
+
+                function getClustersCount(motifs) {
+
+                    var byCluster = _.countBy(motifs,"cluster");
+                    var clusterCount = genZeroClusterCount(vm.clusterNames);
+                    var frequency = angular.extend({},clusterCount,byCluster);
+                    var total = computeTotal(frequency);
+                    var countObj = computePercentageObj(frequency,total);
+
+                    return countObj;
+
+                    ///////////////////////////////
+
+                    function genZeroClusterCount(clusterNames) {
+                        var allClustersCount = clusterNames.reduce(function(prevObj,currObj) {
+                            prevObj[currObj.id] = 0;
+                            return prevObj;
+                        },{});
+
+                        return allClustersCount;
+                    }
+
+                }
+
+                function getMotifsCount(motifs) {
+                    var byMotifStructure = _.countBy(motifs,"motifs[0].structure");
+                    var motifsCount = genZeroMotifCount(vm.motifNames);
+                    var frequency = angular.extend({},motifsCount,byMotifStructure);
+
+                    var total = computeTotal(frequency);
+
+                    var countObj = computePercentageObj(frequency,total);
+
+
+                    return countObj;
+
+                    ///////////////////////////////
+
+                    function genZeroMotifCount(motifNames) {
+                        var allClustersCount = motifNames.reduce(function(prevObj,currObj) {
+                            prevObj[currObj] = 0;
+                            return prevObj;
+                        },{});
+
+                        return allClustersCount;
+                    }
+                }
+
+                function getAreaCount(motifs) {
+
+                    var byArea = _.countBy(motifs,"spatial");
+                    var areaCount = getZeroAreaCount(vm.areas.slice(1));
+                    var frequency = angular.extend({},areaCount,byArea);
+                    var total = computeTotal(frequency);
+                    var countObj = computePercentageObj(frequency,total);
+
+                    return countObj;
+
+                    ///////////////////////////
+
+                    function getZeroAreaCount(areaNames) {
+                        var allClustersCount = areaNames.reduce(function(prevObj,currObj) {
+                            prevObj[currObj.id] = 0;
+                            return prevObj;
+                        },{});
+
+                        return allClustersCount;
+                    }
+
+
+
+                }
+
+                function getODCount(motifs) {
+                    var lastPassIndex = 3;  ////// Warning: assuming a 4 point motif
+                    var byOD = _.countBy(motifs,countOD);
+                    var zeroODCount = {"D_D":0, "D_M":0, "D_A":0,
+                                        "M_D":0, "M_M":0, "M_A":0,
+                                        "A_D":0,"A_M":0,"A_A":0
+                                     };
+                    var frequency = angular.extend({},zeroODCount,byOD);
+                    var countObj = computePercentageObj(frequency,motifs.length);
+                    return countObj;
+
+                    function countOD(aMotif) {
+                        var firstPassPoint = _.pick(aMotif.motifs[0],["x","y"]);
+                        var lastPassPoint = _.pick(aMotif.motifs[lastPassIndex],["x","y"]);
+                        var firstPassLabel = vm.labelPoint(firstPassPoint);
+                        var finalPassLabel = vm.labelPoint(lastPassPoint);
+
+                        return firstPassLabel[0].toUpperCase()+"_"+finalPassLabel[0].toUpperCase();
+
+                    }
+
+                }
+
+                function computeTotal(freqObj) {
+                    return Object.keys(freqObj).reduce(function(total,key) {
+                        return total+ freqObj[key];
+                    },0);
+                }
+
+                function computePercentageObj(freqObj,total) {
+                    var countObj = {};
+
+                    Object.keys(freqObj).forEach(function(key) {
+                        var percentage = freqObj[key]*100/total;
+                        countObj[key] = Math.round(percentage*10)/10;
+                    });
+
+                    return countObj;
+                }
+            }
+
+
+
+
         }
+
+
 
 
 
@@ -798,6 +935,17 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
 
     vm.teams = [{id:0,name:"All"}];
     vm.motifs = [{id:0,name:"All"},{id:1,name:"All -ABCD"}];
+    //Names mapping -- following new numeration
+    vm.clusterNames = [
+        {id:6,name:1},
+        {id:3,name:2},
+        {id:1,name:3},
+        {id:2,name:4},
+        {id:7,name:5},
+        {id:4,name:6},
+        {id:5,name:7},
+        {id:8,name:8}];
+
     vm.clusters = [{id:0, name:"----"}];
     vm.areas = [
         {id:"none",name:"All"},
@@ -811,6 +959,11 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
         {id: "third", name:"3rd", checked: true}
     ];
 
+    vm.selectedOD = {
+        origin: vm.areas[0],
+        dest: vm.areas[0]
+    };
+
     vm.selectedTeam = vm.teams[0];
     vm.selectedMotif = vm.motifs[0];
     vm.selectedCluster = vm.clusters[0];
@@ -822,9 +975,12 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
     vm.filterCluster = filterCluster;
     vm.filterArea = filterArea;
     vm.filterSegment = filterSegment;
+    vm.filterOrigin = filterOrigin;
+    vm.filterDestination = filterDestination;
     vm.filterPlayer = filterPlayer;
     vm.uniqueTeamsChanged = uniqueTeamsChanged;
     vm.filterHelper = filterTeamMatchHelper;
+    vm.labelPoint = labelPoint;
     vm.lineColorAttributes = [
         {name:"By Motif",id:"motif"},
         {name:"By Cluster",id:"cluster"},
@@ -846,12 +1002,42 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
         passes: [{min: 0, sec:0}, {min: 0, sec:0}, {min: 0, sec:0}]
 
     };
+    vm.motifStats = {
+        structure : {
+            ABAB: 0,
+            ABAC: 0,
+            ABCA: 0,
+            ABCB: 0,
+            ABCD: 0
+        },
+        cluster: {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0,
+            6: 0,
+            7: 0,
+            8: 0
+        },
+        area: {
+            defense: 0,
+            middle: 0,
+            attack: 0
+        },
+        OD: {"D_D":0, "D_M":0, "D_A":0,
+            "M_D":0, "M_M":0, "M_A":0,
+            "A_D":0,"A_M":0,"A_A":0
+            }
+    };
 
+    vm.selectedPlayerOp = "include";
+    vm.changeSelectedPlayerOp = changeSelectedPlayerOp;
 
     vm.goalEventId = 16;
     vm.ownGoalProperty = "X28";
 
-    vm.selectedPlayerName = "none";
+    vm.selectedPlayerNames = [];
 
 
 
@@ -893,15 +1079,8 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
             })
 
             //var clusterNames = vm.clusterIds.map(function(d){ return {id:d,name:d};});
-            var clusterNames = [ {id:6,name:1},
-                                {id:3,name:2},
-                                {id:1,name:3},
-                                {id:2,name:4},
-                                {id:7,name:5},
-                                {id:4,name:6},
-                                {id:5,name:7},
-                                {id:8,name:8}];
-            vm.clusters = vm.clusters.concat(clusterNames);
+
+            vm.clusters = vm.clusters.concat(vm.clusterNames);
             //vm.selectedCluster = vm.clusters[3];
 
             var startingIndex = vm.motifs.length;
@@ -936,9 +1115,9 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
             // Consider moving this part of the code for better re-usability
 
             var allMotifsCount = genMotifsFreqBaseObject(vm.motifNames);
-            var allClustersCount = genClusterFreqBaseObject(clusterNames);
+            var allClustersCount = genClusterFreqBaseObject(vm.clusterNames);
 
-            var allClustersMax = getClusterCountBaseObj(clusterNames);
+            var allClustersMax = getClusterCountBaseObj(vm.clusterNames);
 
             var allAreasCount = {
                 "defense": [],
@@ -971,7 +1150,7 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
 
             var helperObj = {
                 maxCluster: maxCluster,
-                clusterNames: clusterNames
+                clusterNames: vm.clusterNames
             };
 
             var freqCountArr = getMotifsFrequency(vm.data,allMotifsCount,allClustersCount,helperObj);
@@ -1229,7 +1408,7 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
     function computeMotifSpatialAttribute(motifsList) {
         return motifsList.map(function(aMotifObj) {
             var centroid = computeCentroid(aMotifObj,aMotifObj.motifs.length);
-            var label = labelCentroid(centroid);
+            var label = labelPoint(centroid);
             return angular.extend(aMotifObj,{spatial:label});
 
         });
@@ -1247,15 +1426,16 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
             return sumXY;
         }
 
-        function labelCentroid(centroid) {
-            var divDefenseMiddle = 33.3;
-            var divMiddleAttack = 66.6;
-            if (centroid.x < divDefenseMiddle) return "defense";
-            if (centroid.x >= divDefenseMiddle
-                    && centroid.x < divMiddleAttack) return "middle";
+    }
 
-            return "attack";
-        }
+    function labelPoint(aPoint) {
+        var divDefenseMiddle = 33.3;
+        var divMiddleAttack = 66.6;
+        if (aPoint.x < divDefenseMiddle) return "defense";
+        if (aPoint.x >= divDefenseMiddle
+            && aPoint.x < divMiddleAttack) return "middle";
+
+        return "attack";
     }
 
     $scope.$watchCollection("motifsVm.matchEvents",function(eventsData) {
@@ -1295,15 +1475,17 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
             vm.dataByTeam = angular.copy(vm.data);
             vm.dataByMotif = angular.copy(vm.data);*/
 
-            //vm.filteredData = vm.data;
-            vm.filteredData = vm.data.filter(function(dataObj) {
+            vm.filteredData = vm.data;
+            /*vm.filteredData = vm.data.filter(function(dataObj) {
                 return dataObj.cluster==3;
-            });
+            });*/
             vm.dataByTeam = vm.data;
             vm.dataByMotif = vm.data;
             vm.dataByCluster = vm.data;
             vm.dataByArea = vm.data;
             vm.dataBySegment = vm.data;
+            vm.dataByOrigin = vm.data;
+            vm.dataByDest= vm.data;
         }
     });
 
@@ -1332,14 +1514,17 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
         var matchObj = _.find(vm.matchesSubset,{id: matchId});
         d3.select(".hText").remove();
 
-        d3.select("#playerHistograms svg")
-            .append("text")
-            .attr("class","hText")
-            .attr("x",320)
-            .attr("y",100)
-            .attr("font-weight","bolder")
-            .attr("font-size","60px")
-            .text(matchObj.home_score+" - "+matchObj.away_score);
+        if(typeof matchObj != "undefined") {
+            d3.select("#playerHistograms svg")
+                .append("text")
+                .attr("class","hText")
+                .attr("x",320)
+                .attr("y",100)
+                .attr("font-weight","bolder")
+                .attr("font-size","60px")
+                .text(matchObj.home_score+" - "+matchObj.away_score);
+        }
+
 
 
         vm.filteredData = filtered;
@@ -1444,24 +1629,81 @@ function arrowMotifsController($scope,motifsLoader,eventsLoader,$filter) {
 
 
         vm.dataBySegment = vm.filteredData;
-        vm.filterPlayer();
-        //console.log(vm.filteredData);
+        vm.filterOrigin();
 
+    }
+
+    function filterOrigin() {
+        if(vm.selectedOD.origin.id != "none") {
+            vm.filteredData = vm.dataBySegment.filter(function(dataObj) {
+                var firstPassPoint = _.pick(dataObj.motifs[0],["x","y"]);
+                var spatialLabel = labelPoint(firstPassPoint);
+                return spatialLabel == vm.selectedOD.origin.id;
+            });
+
+        } else {
+            vm.filteredData = vm.dataBySegment;
+        }
+
+        vm.dataByOrigin = vm.filteredData;
+        vm.filterDestination();
+    }
+
+
+    function filterDestination() {
+
+        if(vm.selectedOD.dest.id != "none") {
+            vm.filteredData = vm.dataByOrigin.filter(function(dataObj) {
+                var passesPerMotif = dataObj.motifs.length-1;
+                var lastPassPoint = _.pick(dataObj.motifs[passesPerMotif],["x","y"]);
+                var spatialLabel = labelPoint(lastPassPoint);
+                return spatialLabel == vm.selectedOD.dest.id;
+            });
+
+        } else {
+            vm.filteredData = vm.dataByOrigin;
+        }
+
+        vm.dataByDest = vm.filteredData;
+        vm.filterPlayer();
     }
 
 
     function filterPlayer() {
 
-        if(vm.selectedPlayerName!="none") {
-            vm.filteredData = vm.dataBySegment.filter(function(dataObj) {
-                var firstMatchingPass = _.find(dataObj.motifs,{player_name:vm.selectedPlayerName});
-                if (typeof firstMatchingPass != "undefined") return true;
-                return false;
-            });
+        if(vm.selectedPlayerNames.length!=0) {
+
+            var options = {
+                include: function(){
+                    return vm.dataByDest.filter(filterBySelectedPlayers);
+                } ,
+                exclude: function() {
+                   return _.reject(vm.dataByDest, filterBySelectedPlayers);
+                }
+
+            };
+            vm.filteredData = options[vm.selectedPlayerOp]();
         } else {
-            vm.filteredData = vm.dataBySegment;
+            vm.filteredData = vm.dataByDest;
         }
 
+
+        function filterBySelectedPlayers(dataObj) {
+            /*  var firstMatchingPass = _.find(dataObj.motifs,{player_name:vm.selectedPlayerNames});
+             if (typeof firstMatchingPass != "undefined") return true;*/
+            var matchedPasses = _(dataObj.motifs).keyBy("player_name").at(vm.selectedPlayerNames).value();
+            var someUndefined = matchedPasses.some(function(aPass) {
+                return typeof aPass == "undefined";
+            });
+
+            return someUndefined? false: true ;
+        }
+
+    }
+
+    function changeSelectedPlayerOp() {
+
+        vm.filterPlayer();
     }
 
 
